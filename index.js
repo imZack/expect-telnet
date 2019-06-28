@@ -20,7 +20,9 @@ module.exports = function(dest, seq, opts, cb) {
 
   dest = url.parse("http://" + dest);
 
-  socket.setTimeout(opts.timeout || TIMEOUT);
+  if (opts.timeout && opts.timeout !== Infinity) {
+    socket.setTimeout(opts.timeout || TIMEOUT);
+  }
 
   socket.once("timeout", () => {
     endSocket(socket);
@@ -57,11 +59,14 @@ module.exports = function(dest, seq, opts, cb) {
       return cb();
     }
 
-    if (!seq[i].timeout) {
-      seq[i].timeout = setTimeout(() => {
-        endSocket(socket);
-        cb(new Error("Expect sequence timeout: " + seq[i].expect));
-      }, opts.timeout || TIMEOUT);
+    if (!seq[i].timer) {
+      const timeout = seq[i].timeout || opts.timeout || TIMEOUT;
+      if (timeout !== Infinity) {
+        seq[i].timer = setTimeout(() => {
+          endSocket(socket);
+          cb(new Error("Expect sequence timeout: " + seq[i].expect));
+        }, timeout);
+      }
     }
 
     saved += chunk;
@@ -77,7 +82,10 @@ module.exports = function(dest, seq, opts, cb) {
     }
 
     if (matched) {
-      clearTimeout(seq[i].timeout);
+      if (seq[i].timer) {
+        clearTimeout(seq[i].timer);
+      }
+
       seq[i].done = true;
 
       if (seq[i].out) {

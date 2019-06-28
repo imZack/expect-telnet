@@ -47,9 +47,10 @@ et("1.2.3.4:23", [
 - `send`     *string*  : String to send when `expect` is found.
 - `out`      *function*: Output function, receives the output since the previous step.
 - `interact` *boolean* : Enter interacive mode with stdin/stdout. There's currently no way out of this mode, so this should be last.
+- `timeout` *number: Timeout for step in milliseconds. Set to `Infinity` for no timeout.
 
 #### Options
-- `timeout` *number: Timeout for connection and expect sequences in milliseconds. Set to `infinity` for no timeout.
+- `timeout` *number: Timeout for connection and expect sequences in milliseconds. Set to `Infinity` for no timeout.
 - `exit`  *boolean*: Whether to exit the process when interacting ends.
 
 © [silverwind](https://github.com/silverwind), distributed under BSD licence
